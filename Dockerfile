@@ -3,6 +3,7 @@ FROM php:7.1-fpm
 MAINTAINER "Pengostores"
 
 ENV PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=magento2 --with-fpm-group=magento2"
+ENV NODE_VERSION="6.x"
 
 RUN apt-get update && apt-get install -y \
     apt-utils \
@@ -45,10 +46,6 @@ RUN apt-get update && apt-get install -y \
     && echo "xdebug.max_nesting_level=1000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && chmod 666 /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && mkdir /var/run/sshd \
-    && apt-get clean && apt-get update && apt-get install -y nodejs \
-    && ln -s /usr/bin/nodejs /usr/bin/node \
-    && apt-get install -y npm \
-    && npm update -g npm && npm install -g grunt-cli && npm install -g gulp \
     && echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
     && apt-get install -y apache2 \
     && a2enmod rewrite \
@@ -119,6 +116,13 @@ COPY scripts/ /home/magento2/scripts/
 RUN sed -i 's/^/;/' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && cd /home/magento2/scripts && composer install && chmod +x /home/magento2/scripts/m2init \
     && sed -i 's/^;;*//' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Install Node
+WORKDIR /tmp
+RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - \
+&& apt-get update \
+    && apt-get install -y build-essential nodejs \
+    && npm install -g express && npm install -g grunt-cli 
 
 RUN chown -R magento2:magento2 /home/magento2 && \
     chown -R magento2:magento2 /var/www/magento2 && \
