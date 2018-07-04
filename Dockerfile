@@ -1,4 +1,4 @@
-FROM php:7.0.16-fpm
+FROM php:7.1-fpm
 
 MAINTAINER "Magento"
 
@@ -16,9 +16,10 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev libxslt1-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
-    libpng12-dev \
+    libpng-dev \
     git \
     vim \
+    nano \
     openssh-server \
     supervisor \
     mysql-client \
