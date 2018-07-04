@@ -3,6 +3,7 @@ FROM php:7.0.16-fpm
 MAINTAINER "Magento"
 
 ENV PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=magento2 --with-fpm-group=magento2"
+ENV NODE_VERSION="6.x"
 
 RUN apt-get update && apt-get install -y \
     apt-utils \
@@ -43,10 +44,6 @@ RUN apt-get update && apt-get install -y \
     && echo "xdebug.max_nesting_level=1000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && chmod 666 /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && mkdir /var/run/sshd \
-    && apt-get clean && apt-get update && apt-get install -y nodejs \
-    && ln -s /usr/bin/nodejs /usr/bin/node \
-    && apt-get install -y npm \
-    && npm update -g npm && npm install -g grunt-cli && npm install -g gulp \
     && echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
     && apt-get install -y apache2 \
     && a2enmod rewrite \
@@ -95,6 +92,13 @@ ENV USE_SHARED_WEBROOT 1
 ENV SHARED_CODE_PATH /var/www/magento2
 ENV WEBROOT_PATH /var/www/magento2
 ENV MAGENTO_ENABLE_SYNC_MARKER 0
+
+## Node
+WORKDIR /tmp
+RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - \
+&& apt-get update \
+    && apt-get install -y build-essential nodejs \
+    && npm install -g gulp && npm install -g grunt-cli
 
 RUN mkdir /windows \
  && cd /windows \
