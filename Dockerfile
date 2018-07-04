@@ -1,6 +1,6 @@
 FROM php:7.1-fpm
 
-MAINTAINER "Magento"
+MAINTAINER "Pengostores"
 
 ENV PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=magento2 --with-fpm-group=magento2"
 
@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
     git \
     vim \
     nano \
+    gnupg \
     openssh-server \
     supervisor \
     mysql-client \
@@ -127,7 +128,7 @@ RUN chown -R magento2:magento2 /home/magento2 && \
 RUN passwd magento2 -d
 
 EXPOSE 80 22 5000 44100
-WORKDIR /home/magento2
+WORKDIR /var/www/html
 
 USER root
 
